@@ -15,8 +15,8 @@ services:
                     - proxy-app
 
     proxy-prometheus-exporter:
-        image: nginx/nginx-prometheus-exporter
-        container_name: proxy_prometheus_expo
+        image: nginx/nginx-prometheus-exporter:latest
+        container_name: proxy-prometheus-expo
         ports:
             - 9113:9113
         environment:
@@ -52,6 +52,6 @@ services:
         networks:
             monitoring:
                 aliases:
-                    - am 
+                    - alertmanager
 networks:
     monitoring:

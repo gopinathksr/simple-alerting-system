@@ -1,23 +1,31 @@
+# These settings were setup so that the transition from nginx to alertmanager can observed in 15 seconds.
+# Prometheus evaluates these two alerts once every 10sec and once an alert detected, 
+# prometheus will see if that alert is holding for atleast 5 seconds before firing an alert.
+
 groups:
 - name: InstanceStatus
+  # Interval at which rules are evaluated.
+  interval: 10s # defaults to 1m
   rules:
   # Alert for any instance that is unreachable for >10 seconds.
   - alert: NginxServerDown
     expr: nginx_up == 0
-    for: 20s
+    # Prometheus checks for this alert for 5sec.
+    for: 5s
     labels:
       severity: critical
     # Prometheus templates apply here in the annotation and label fields of the alert.
     annotations:
-      description: "Proxy app is down for more than 10 seconds"
+      description: "Proxy app is down for more than 5 seconds"
       summary: "Nginx server hosting app is down"
   
   - alert: ExporterDown
     expr: up == 0
-    for: 20s
+    # Prometheus checks for this alert for 5sec.
+    for: 5s
     labels:
       severity: critical
     # Prometheus templates apply here in the annotation and label fields of the alert.
     annotations:
-      description: "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 5 minutes."
+      description: "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 5 seconds."
       summary: "Instance {{ $labels.instance }} down"
