@@ -20,15 +20,17 @@
 ### Task implementation Plan
 1. Host a simple static app on Nginx sever that displays this task and its associated details.
 
-2. enable status_stubs on Nginx in configuration to be able to get metrics of the Nginx server.
+2. Enable status_stubs on Nginx in configuration to be able to get metrics of the Nginx server.
 
 3. This metrics need to be parserd in a way Prometheus can understand. To achieve this, use proxy_prometheus_exporter, which bridges Nginx and Prometheus.
 
-4. This parsed metrics has **nginx_up** token, which speaks about last successful scrape of the mertics exposed by nginx server. A value of 0 mean the scrape was unsuccessful and could mena the Nginx server is down.
+4. This parsed metrics has **nginx_up** token, which speaks about last successful scrape of the mertics exposed by nginx server. A value of 0 mean the scrape was unsuccessful and could mean the Nginx server is down.
 
-5. up token in general speaks about the status of the instance that is writing alerts to Prometheus. A value of 0 on this could mean that the exporter itself is down.
+5. **up** token in general speaks about the status of any instance that is configured to Prometheus. A value of 0 on this means that istance is down.
 
-6. Based on nginx_up and up tokens set up rules to fire alerts to alert manager  about Nginx and exporter  respectively.
+6. It is also possible to stub a health endpoint on nginx server and serve a simple atrig that is acceptable by prometheus. This end point can be configured to prometheus to know if the server is down. Whith out this stub it is not possible to configure Nginx to prometheus directly.
+
+6. Based on **nginx_up** and **up** and **nginx_running** (stubbed) tokens set up rules to fire alerts to alert manager about Nginx and exporter respectively.
    
 ### Build instrucions
 
@@ -39,34 +41,32 @@
    2. localhost:9113/metrics for looking at parsed metrics exposed by nginx on /stub_status
    3. localhost:9090/alerts for prometheus alerts
    4. localhost:9093 for alertmanger
+   ![](images/Capture1.PNG)
+   
+   ![](images/Capture2.PNG)
 
 ### Test instructions
 
-1. after successful buid
-2. at the repo root run `dockrer container stop proxy-app`
+1. after successful build
+2. at the repo root run `docker container stop proxy-app`
 3. This will stop the nginx container 
-4. after a minute once can observer event been calculated at prometheus an fired to alert manager.
-5. can obser ve the similar aler for `dockrer container stop proxy_prometheus_expo`
+   ![](images/Capture3.PNG)
+4. This is captured by prometheus.
+   ![](images/Capture4.PNG)
+5. This phenomenon creates two alerts.
+   1. Instance down as th Nginx server is Down.
+   2. Scrape faiulre alert as there were no metrics to scrape 
+   ![](images/Capture5.PNG)
+6. After 15-30 seconds (these values are used to the alert quicly) one can observer event been calculated at prometheus and fired to alert manager.
+   ![](images/Capture6.PNG)
+7. Can observe the similar alert for `docker container stop proxy-prometheus-expo` 
+   Note: stopping proxy-prometheus-expo container will result in scrape failure alert only.
 
-![](images/Capture1.PNG)
-
-![](images/Capture2.PNG)
-
-![](images/Capture3.PNG)
-
-![](images/Capture4.PNG)
-
-![](images/Capture5.PNG)
+### clean up
+   
+1. At the repo root run   `docker-compose down`
 
 ![](images/Capture6.PNG)
-
-![](images/Capture7.PNG)
-
-![](images/Capture8.PNG)
-
-![](images/Capture9.PNG)
-
-![](images/Capture10.PNG)
 
 ### Resources:
 1. inspiration : https://github.com/g00glen00b/movie-quote-app/blob/master/docker-compose.yml
