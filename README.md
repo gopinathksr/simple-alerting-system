@@ -60,7 +60,7 @@
 6. After 15-30 seconds (these values are used to the alert quicly) one can observer event been calculated at prometheus and fired to alert manager.
    ![](images/Capture6.PNG)
 7. Can observe the similar alert for `docker container stop proxy-prometheus-expo` 
-   Note: stopping proxy-prometheus-expo container will result in scrape failure alert only.
+   Note: stopping proxy-prometheus-expo container will result in InstanceDown alert only.
 
 ### clean up
    
